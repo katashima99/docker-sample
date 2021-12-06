@@ -1,0 +1,43 @@
+version: '3.6'
+services:
+  mysql:
+    container_name: mysql
+    build: ./mysql
+    environment:
+      MYSQL_DATABASE: ideaedge_db
+      MYSQL_USER: ideaedge_user
+      MYSQL_PASSWORD: ideaEdge
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - 13306:3306
+    volumes:
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
+      - mysql_db:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+    links:
+      - mysql
+    ports:
+        - 9090:80
+  # backend:
+  #   container_name: backend
+  #   build: ./spring
+  #   depends_on:
+  #     - mysql
+  #   ports:
+  #     - 8081:8080
+  #   tty: true
+  #   volumes:
+  #     - ../ideaEdge/ideaEDGE_server_code:/srv:cached
+  #   working_dir: /srv
+    # environment:
+    #   JAR_TARGET: spring_app-0.0.1-SNAPSHOT.jar
+  #   # restart: always
+volumes:
+  mysql_db:
+    driver: local
